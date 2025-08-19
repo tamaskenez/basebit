@@ -1,0 +1,3 @@
+[submodule "submodules/meadow"]
+	path = submodules/meadow
+	url = https://github.com/tamaskenez/meadow.git
