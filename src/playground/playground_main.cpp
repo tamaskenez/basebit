@@ -17,7 +17,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     basebit::set_interactive(true);
     basebit::create_window("Everything is fine.", 0.6f, basebit::Resolution(320, 200, 32, 36));
     float m = 255.0f;
-    // basebit::set_border_color(basebit::RGB{100/m, 100/m, 100/m});
     basebit::set_border_color(basebit::RGB{113 / m, 109 / m, 235 / m});
     basebit::set_background_color(basebit::RGB{46 / m, 44 / m, 155 / m});
     basebit::clear_window();

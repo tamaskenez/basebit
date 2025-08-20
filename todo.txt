@@ -1,3 +1,6 @@
 // Add logging system.
 // Detect screen change (screen change event?)
-// What renderers are available?
+add readme
+add description
+add c64 palette
+python interface
