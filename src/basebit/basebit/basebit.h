@@ -10,8 +10,17 @@ namespace basebit
 {
 
 struct BASEBIT_EXPORT Resolution {
-    int width, height;
-    int border_width, border_height;
+    int width = 0, height = 0;
+    int border_width = 0, border_height = 0;
+
+    Resolution() = default;
+    Resolution(int w, int h, int bw, int bh)
+        : width(w)
+        , height(h)
+        , border_width(bw)
+        , border_height(bh)
+    {
+    }
     int full_width() const
     {
         return width + 2 * border_width;
@@ -29,6 +38,7 @@ BASEBIT_EXPORT void create_window(const char* title, float height_to_screen_rati
 BASEBIT_EXPORT void set_background_color(RGB c);
 BASEBIT_EXPORT void set_border_color(RGB c);
 BASEBIT_EXPORT void clear_window();
+BASEBIT_EXPORT void exec();
 
 class Error : std::runtime_error
 {

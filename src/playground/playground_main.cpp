@@ -20,6 +20,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     basebit::set_border_color(basebit::RGB{113 / m, 109 / m, 235 / m});
     basebit::set_background_color(basebit::RGB{46 / m, 44 / m, 155 / m});
     basebit::clear_window();
+    // basebit::exec();
 
     int num_renderers = SDL_GetNumRenderDrivers();
     for (int i = 0; i < num_renderers; ++i) {

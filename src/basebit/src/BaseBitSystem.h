@@ -44,9 +44,12 @@ public:
     void set_border_color(RGB c);
     void clear_window();
 
+    void exec();
+
 private:
     void interactive_update();
     void update_texture_from_surface();
+    void update_screen();
 
     Surface surface;
     RGB background_color, border_color;

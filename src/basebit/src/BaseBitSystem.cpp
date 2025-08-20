@@ -14,6 +14,12 @@ BaseBitSystem::BaseBitSystem(vector<SDL_DisplayID> displaysArg)
 
 void BaseBitSystem::set_interactive(bool enable)
 {
+    if (main.window) {
+        if (!SDL_SetWindowAlwaysOnTop(main.window.get(), interactive)) {
+            throw_sdl_error("SDL_SetWindowAlwaysOnTop");
+        }
+    }
+
     bool enabled_now = !interactive && enable;
     interactive = enable;
     if (enabled_now) {
@@ -100,7 +106,6 @@ void BaseBitSystem::create_window(const char* title, float height_to_screen_rati
             if (!main.renderer) {
                 throw_sdl_error("SDL_CreateWindowAndRenderer");
             }
-            println("Renderer name: {}", SDL_GetRendererName(main.renderer.get())); // todo remove
         } else {
             if (!SDL_SetWindowSize(main.window.get(), cwd_result.window_size[0], cwd_result.window_size[1])) {
                 throw_sdl_error("SDL_SetWindowSize");
@@ -130,6 +135,9 @@ void BaseBitSystem::create_window(const char* title, float height_to_screen_rati
 
     main.texture.reset(SDL_CreateTextureWithProperties(main.renderer.get(), props));
     SDL_DestroyProperties(props);
+
+    set_interactive(interactive);
+
     interactive_update();
 }
 
@@ -171,26 +179,41 @@ void BaseBitSystem::update_texture_from_surface()
     SDL_UnlockTexture(main.texture.get());
 }
 
+void BaseBitSystem::update_screen()
+{
+    SDL_SetRenderDrawColor(main.renderer.get(), 0, 0, 0, 255);
+    if (!SDL_RenderClear(main.renderer.get())) {
+        throw_sdl_error("SDL_RenderClear");
+    }
+    update_texture_from_surface();
+    if (!SDL_RenderTexture(main.renderer.get(), main.texture.get(), nullptr, nullptr)) {
+        throw_sdl_error("SDL_RenderTexture");
+    }
+    if (!SDL_RenderPresent(main.renderer.get())) {
+        throw_sdl_error("SDL_RenderPresent");
+    }
+}
+
 void BaseBitSystem::interactive_update()
 {
     if (interactive) {
+#if 1
+        for (int i = 0; i < 3; ++i) {
+            SDL_Event event;
+            while (SDL_PollEvent(&event)) {}
+            if (main.window && main.renderer) {
+                update_screen();
+            }
+        }
+#else
         SDL_PumpEvents();
         if (main.window && main.renderer) {
-            SDL_SetRenderDrawColor(main.renderer.get(), 0, 0, 0, 255);
-            if (!SDL_RenderClear(main.renderer.get())) {
-                throw_sdl_error("SDL_RenderClear");
-            }
-            update_texture_from_surface();
-            if (!SDL_RenderTexture(main.renderer.get(), main.texture.get(), nullptr, nullptr)) {
-                throw_sdl_error("SDL_RenderTexture");
-            }
-            if (!SDL_RenderPresent(main.renderer.get())) {
-                throw_sdl_error("SDL_RenderPresent");
-            }
+            update_screen();
             if (!SDL_RenderPresent(main.renderer.get())) {
                 throw_sdl_error("SDL_RenderPresent");
             }
         }
+#endif
     }
 }
 
@@ -222,6 +245,20 @@ void BaseBitSystem::clear_window()
         std::fill(d + y * stride + left_border_x0, d + (y + 1) * stride, border_color);
     }
     interactive_update();
+}
+
+void BaseBitSystem::exec()
+{
+    auto exit_at = chr::steady_clock::now() + chr::seconds(5);
+    while (chr::steady_clock::now() < exit_at) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) { // poll until all events are handled!
+            // decide what to do with this event.
+        }
+
+        // update game state, draw the current frame
+        update_screen();
+    }
 }
 
 } // namespace basebit

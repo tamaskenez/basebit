@@ -54,4 +54,9 @@ void clear_window()
     g_basebit->clear_window();
 }
 
+void exec()
+{
+    g_basebit->exec();
+}
+
 } // namespace basebit
