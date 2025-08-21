@@ -30,4 +30,8 @@ target_link_libraries(basebit-python PRIVATE
 )
 install(TARGETS basebit-python DESTINATION .)
 
-
+# basebit (and basebit-python) don't have any (non-system) shared library dependencies.
+# Building with install rpath has two effects:
+# - .so is not modified after installation, no need to re-ad-hoc-sign it
+# - install_name_tool doesn't complain about no LC_RPATH entries for the `-delete_rpath` command
+set_target_properties(basebit-python PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
