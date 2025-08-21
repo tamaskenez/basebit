@@ -4,8 +4,6 @@ set(CMAKE_VISIBILITY_INLINES_HIDDEN TRUE)
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS *.h *.cpp)
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${sources})
 
-list(FILTER sources EXCLUDE REGEX ".*/src/python_bindings.cpp$")
-
 add_library(basebit STATIC ${sources})
 target_link_libraries(basebit
 	PRIVATE
@@ -22,16 +20,3 @@ include(GenerateExportHeader)
 generate_export_header(basebit
 	EXPORT_FILE_NAME "${CMAKE_CURRENT_BINARY_DIR}/basebit/export.h"
 )
-
-pybind11_add_module(basebit-python "src/python_bindings.cpp")
-set_target_properties(basebit-python PROPERTIES OUTPUT_NAME "basebit")
-target_link_libraries(basebit-python PRIVATE
-	basebit
-)
-install(TARGETS basebit-python DESTINATION .)
-
-# basebit (and basebit-python) don't have any (non-system) shared library dependencies.
-# Building with install rpath has two effects:
-# - .so is not modified after installation, no need to re-ad-hoc-sign it
-# - install_name_tool doesn't complain about no LC_RPATH entries for the `-delete_rpath` command
-set_target_properties(basebit-python PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)

@@ -1,3 +1,5 @@
 add_subdirectory(sdl_util)
 add_subdirectory(basebit)
+add_subdirectory(basebit_python)
+add_subdirectory(basebit_test)
 add_subdirectory(playground)

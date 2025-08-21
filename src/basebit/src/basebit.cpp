@@ -10,6 +10,7 @@
 #include "sdl_util/sdlcpp.h"
 
 #include <SDL3/SDL_init.h>
+#include <SDL3/SDL_surface.h>
 
 namespace basebit
 {

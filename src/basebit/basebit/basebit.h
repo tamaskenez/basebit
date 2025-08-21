@@ -2,34 +2,16 @@
 
 #include "basebit/export.h"
 
+#include "basebit/Color.h"
+#include "basebit/Error.h"
+#include "basebit/Resolution.h"
+
 #include <array>
 #include <stdexcept>
 #include <string>
 
 namespace basebit
 {
-
-struct BASEBIT_EXPORT Resolution {
-    int width = 0, height = 0;
-    int border_width = 0, border_height = 0;
-
-    Resolution() = default;
-    Resolution(int w, int h, int bw, int bh)
-        : width(w)
-        , height(h)
-        , border_width(bw)
-        , border_height(bh)
-    {
-    }
-    int full_width() const
-    {
-        return width + 2 * border_width;
-    }
-    int full_height() const
-    {
-        return height + 2 * border_height;
-    }
-};
 using RGB = std::array<float, 3>;
 
 BASEBIT_EXPORT void init();
@@ -39,19 +21,6 @@ BASEBIT_EXPORT void set_background_color(RGB c);
 BASEBIT_EXPORT void set_border_color(RGB c);
 BASEBIT_EXPORT void clear_window();
 BASEBIT_EXPORT void exec();
-
-class Error : std::runtime_error
-{
-public:
-    explicit Error(const std::string& msg)
-        : std::runtime_error(msg)
-    {
-    }
-    explicit Error(const char* msg)
-        : std::runtime_error(msg)
-    {
-    }
-};
 } // namespace basebit
 
 /*
