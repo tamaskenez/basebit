@@ -20,14 +20,7 @@ void init()
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         throw_sdl_error("SDL_Init");
     }
-
-    auto displays = sdl::GetDisplays();
-    if (!displays) {
-        throw Error(displays.error());
-    }
-    // Note, we might get zero displays, which is not an error.
-
-    g_basebit = make_unique<BaseBitSystem>(MOVE(*displays));
+    g_basebit = make_unique<BaseBitSystem>();
 }
 
 void set_interactive(bool enable)
@@ -40,19 +33,19 @@ void create_window(const char* title, float height_to_screen_ratio, const Resolu
     g_basebit->create_window(title, height_to_screen_ratio, resolution);
 }
 
-void set_background_color(RGB c)
+void background_color(const Color& c)
 {
-    g_basebit->set_background_color(c);
+    g_basebit->background_color(c);
 }
 
-void set_border_color(RGB c)
+void border_color(const Color& c)
 {
-    g_basebit->set_border_color(c);
+    g_basebit->border_color(c);
 }
 
-void clear_window()
+void clear()
 {
-    g_basebit->clear_window();
+    g_basebit->clear();
 }
 
 void exec()

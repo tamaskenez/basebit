@@ -11,15 +11,16 @@
 #include <cstdlib>
 #include <thread>
 
+namespace bb = basebit;
+
 int main([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
-    basebit::init();
-    basebit::set_interactive(true);
-    basebit::create_window("Everything is fine.", 0.6f, basebit::Resolution(320, 200, 32, 36));
-    float m = 255.0f;
-    basebit::set_border_color(basebit::RGB{113 / m, 109 / m, 235 / m});
-    basebit::set_background_color(basebit::RGB{46 / m, 44 / m, 155 / m});
-    basebit::clear_window();
+    bb::init();
+    bb::set_interactive(true);
+    bb::create_window("Everything is fine.", 0.6f, basebit::Resolution(320, 200, 32, 36));
+    bb::border_color(bb::Color(113, 109, 235));
+    bb::background_color(bb::Color(46, 44, 155, 255));
+    bb::clear();
     // basebit::exec();
 
     int num_renderers = SDL_GetNumRenderDrivers();

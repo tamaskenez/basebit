@@ -17,9 +17,9 @@ using RGB = std::array<float, 3>;
 BASEBIT_EXPORT void init();
 BASEBIT_EXPORT void set_interactive(bool enable);
 BASEBIT_EXPORT void create_window(const char* title, float height_to_screen_ratio, const Resolution& resolution);
-BASEBIT_EXPORT void set_background_color(RGB c);
-BASEBIT_EXPORT void set_border_color(RGB c);
-BASEBIT_EXPORT void clear_window();
+BASEBIT_EXPORT void background_color(const Color& c);
+BASEBIT_EXPORT void border_color(const Color& c);
+BASEBIT_EXPORT void clear();
 BASEBIT_EXPORT void exec();
 } // namespace basebit
 

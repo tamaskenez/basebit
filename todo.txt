@@ -3,4 +3,5 @@
 add readme
 add description
 add c64 palette
-python interface
+test exceptions in python
+todo should not crash when monitor plugged off then back

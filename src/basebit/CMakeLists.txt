@@ -10,6 +10,7 @@ target_link_libraries(basebit
 		SDL3::SDL3
 		meadow
 		sdl_util
+		absl::cleanup
 )
 target_include_directories(basebit
 	PUBLIC

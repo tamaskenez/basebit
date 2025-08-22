@@ -21,6 +21,6 @@ public:
     }
 
 private:
-    std::array<float, 4> rgba;
+    std::array<float, 4> rgba; // Linear sRGB.
 };
 } // namespace basebit

@@ -10,6 +10,9 @@
 template<class T>
 class sdl_unique_ptr;
 
+template<class T>
+sdl_unique_ptr(T*) -> sdl_unique_ptr<T>;
+
 #define DEFINE_SDL_UNIQUE_PTR(TYPE, DELETER_FN)                               \
     struct TYPE##_Deleter {                                                   \
         void operator()(TYPE* p) const                                        \
@@ -31,5 +34,6 @@ class sdl_unique_ptr;
 DEFINE_SDL_UNIQUE_PTR(SDL_Window, SDL_DestroyWindow)
 DEFINE_SDL_UNIQUE_PTR(SDL_Renderer, SDL_DestroyRenderer)
 DEFINE_SDL_UNIQUE_PTR(SDL_Texture, SDL_DestroyTexture)
+DEFINE_SDL_UNIQUE_PTR(SDL_Surface, SDL_DestroySurface)
 
 #undef DEFINE_SDL_UNIQUE_PTR
