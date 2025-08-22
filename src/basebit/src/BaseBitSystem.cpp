@@ -206,6 +206,19 @@ void BaseBitSystem::background_color(int palette_ix)
     background_color(palette_[iicast<size_t>(palette_ix)]);
 }
 
+void BaseBitSystem::color(const Color& c)
+{
+    color_ = c;
+}
+
+void BaseBitSystem::color(int palette_ix)
+{
+    if (palette_ix < 0 || cmp_less_equal(palette_.size(), palette_ix)) {
+        throw Error(std::format("Invalid palette index: {} (allowed range: 0 - {})", palette_ix, palette_.size()));
+    }
+    color(palette_[iicast<size_t>(palette_ix)]);
+}
+
 void BaseBitSystem::palette(std::vector<Color> colors)
 {
     palette_ = MOVE(colors);
@@ -223,6 +236,17 @@ void BaseBitSystem::clear()
         }
         interactive_update();
     }
+}
+
+void BaseBitSystem::plot(int x, int y)
+{
+    if (!content_window) {
+        throw Error("No window to plot to");
+    }
+    content_window->bitmap_layer.plot(
+      content_window->resolution.border_width + x, content_window->resolution.border_height + y, color_
+    );
+    interactive_update();
 }
 
 void BaseBitSystem::exec()

@@ -94,6 +94,16 @@ void background_color(int palette_ix)
     g_basebit->background_color(palette_ix);
 }
 
+void color(const Color& c)
+{
+    g_basebit->color(c);
+}
+
+void color(int palette_ix)
+{
+    g_basebit->color(palette_ix);
+}
+
 void clear()
 {
     g_basebit->clear();
@@ -107,6 +117,11 @@ void exec()
 void palette(std::vector<Color> colors)
 {
     g_basebit->palette(MOVE(colors));
+}
+
+void plot(int x, int y)
+{
+    g_basebit->plot(x, y);
 }
 
 } // namespace basebit

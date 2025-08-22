@@ -14,7 +14,7 @@ namespace basebit
 class BaseBitSystem
 {
     optional<ContentWindow> content_window;
-    Color border_color_, background_color_;
+    Color border_color_, background_color_, color_;
     std::vector<Color> palette_;
 
 public:
@@ -30,10 +30,13 @@ public:
     void background_color(int palette_ix);
     void border_color(const Color& c);
     void border_color(int palette_ix);
+    void color(const Color& c);
+    void color(int palette_ix);
 
     void clear();
 
     void palette(std::vector<Color> colors);
+    void plot(int x, int y);
 
     void exec();
 

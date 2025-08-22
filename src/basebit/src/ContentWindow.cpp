@@ -15,13 +15,10 @@ void ContentWindow::update_window_from_content(UNUSED const Color& border_color,
       SDL_SetRenderDrawColorFloat, renderer.get(), c[0], c[1], c[2], c[3]
     ); // TODO: check if setting renderer colorspace to srgb_linear makes this different.
     TRY_SDL_FN(SDL_RenderClear, renderer.get());
-#if 0
     // Layer#2: Draw bitmap.
+    bitmap_layer.render(renderer);
+#if 0
     // Layer#3: Draw character grid.
-    update_texture_from_surface();
-    if (!SDL_RenderTexture(renderer.get(), main.texture.get(), nullptr, nullptr)) {
-        throw_sdl_error("SDL_RenderTexture");
-    }
 #endif
 #if 1
     // Layer#4: Draw border.

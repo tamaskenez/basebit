@@ -8,21 +8,24 @@ namespace basebit
 {
 
 class Renderer;
+class Color;
 
 // To manage the bitmap layer of the display content.
-struct SurfaceWithTexture {
+class SurfaceWithTexture
+{
     int width, height;
     sdl_unique_ptr<SDL_Surface> surface;
     int texture_handle;
+    SDL_Rect dirty_area; // The part of the texture that should be updated.
 
+public:
     SurfaceWithTexture(Renderer& renderer, int w, int h);
 
     void clear(); // Clear surface to translucent black.
     void invalidate_all();
 
-    void update_texture(Renderer& renderer);
+    void render(Renderer& renderer);
 
-private:
-    SDL_Rect dirty_area; // The part of the texture that should be updated.
+    void plot(int x, int y, const Color& c);
 };
 } // namespace basebit

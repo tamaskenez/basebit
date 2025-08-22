@@ -21,7 +21,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     bb::palette(bb::Palette::commodore_64);
     bb::border_color(14);
     bb::background_color(6);
-    bb::clear();
+    bb::color(1);
+    for (int x : vi::iota(0, 320)) {
+        bb::plot(x, x % 20);
+    }
     // basebit::exec();
 
     int num_renderers = SDL_GetNumRenderDrivers();

@@ -27,9 +27,12 @@ BASEBIT_EXPORT void background_color(const Color& c);
 BASEBIT_EXPORT void background_color(int palette_ix);
 BASEBIT_EXPORT void border_color(const Color& c);
 BASEBIT_EXPORT void border_color(int palette_ix);
+BASEBIT_EXPORT void color(const Color& c);
+BASEBIT_EXPORT void color(int palette_ix);
 BASEBIT_EXPORT void clear();
 BASEBIT_EXPORT void exec();
 BASEBIT_EXPORT void palette(std::vector<Color> colors);
+BASEBIT_EXPORT void plot(int x, int y);
 } // namespace basebit
 
 /*

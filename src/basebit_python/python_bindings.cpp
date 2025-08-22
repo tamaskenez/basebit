@@ -45,4 +45,5 @@ PYBIND11_MODULE(basebit, m, py::mod_gil_not_used())
         py::init<std::string_view>(),
         "Initialize with an sRGB color code of 6 or 8 hex digits, with an optional '#' prefix"
       );
+    py::register_local_exception<basebit::Error>(module, "Error", PyExc_RuntimeError);
 }
