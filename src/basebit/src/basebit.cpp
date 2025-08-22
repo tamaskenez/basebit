@@ -15,10 +15,8 @@
 namespace basebit
 {
 
-namespace Palette
-{
 // https://www.pepto.de/projects/colorvic/
-const std::vector<Color> commodore_64 = {
+const std::vector<Color> Palette::commodore_64 = {
   Color(0, 0, 0),       // #0 black
   Color(255, 255, 255), // #1 white
   Color(129, 51, 56),   // #2 red
@@ -38,7 +36,7 @@ const std::vector<Color> commodore_64 = {
 };
 
 // https://en.wikipedia.org/wiki/ZX_Spectrum_graphic_modes
-const std::vector<Color> zx_spectrum = {
+const std::vector<Color> Palette::zx_spectrum = {
   Color("#000000"), // #0 black
   Color("#0100ce"), // #1 blue
   Color("#cf0100"), // #2 red
@@ -56,7 +54,6 @@ const std::vector<Color> zx_spectrum = {
   Color("#ffff1d"), // #14 bright yellow
   Color("#ffffff")  // #15 bright white
 };
-} // namespace Palette
 
 void init()
 {

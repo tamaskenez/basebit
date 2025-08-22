@@ -13,11 +13,12 @@
 
 namespace basebit
 {
-namespace Palette
+class Palette
 {
-extern const std::vector<Color> commodore_64;
-extern const std::vector<Color> zx_spectrum;
-} // namespace Palette
+public:
+    static const std::vector<Color> commodore_64;
+    static const std::vector<Color> zx_spectrum;
+};
 
 BASEBIT_EXPORT void init();
 BASEBIT_EXPORT void set_interactive(bool enable);

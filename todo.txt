@@ -5,3 +5,4 @@ add description
 add c64 palette
 test exceptions in python
 todo should not crash when monitor plugged off then back
+interactive_update doesn't update sometimes
