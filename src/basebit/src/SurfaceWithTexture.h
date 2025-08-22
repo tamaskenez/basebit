@@ -18,6 +18,7 @@ struct SurfaceWithTexture {
     SurfaceWithTexture(Renderer& renderer, int w, int h);
 
     void clear(); // Clear surface to translucent black.
+    void invalidate_all();
 
     void update_texture(Renderer& renderer);
 

@@ -9,18 +9,26 @@
 #include <array>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace basebit
 {
-using RGB = std::array<float, 3>;
+namespace Palette
+{
+extern const std::vector<Color> commodore_64;
+extern const std::vector<Color> zx_spectrum;
+} // namespace Palette
 
 BASEBIT_EXPORT void init();
 BASEBIT_EXPORT void set_interactive(bool enable);
 BASEBIT_EXPORT void create_window(const char* title, float height_to_screen_ratio, const Resolution& resolution);
 BASEBIT_EXPORT void background_color(const Color& c);
+BASEBIT_EXPORT void background_color(int palette_ix);
 BASEBIT_EXPORT void border_color(const Color& c);
+BASEBIT_EXPORT void border_color(int palette_ix);
 BASEBIT_EXPORT void clear();
 BASEBIT_EXPORT void exec();
+BASEBIT_EXPORT void palette(std::vector<Color> colors);
 } // namespace basebit
 
 /*

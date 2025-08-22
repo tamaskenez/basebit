@@ -19,7 +19,6 @@ struct ContentWindow {
     SurfaceWithTexture bitmap_layer;
     optional<CharacterGridWithTexture> char_grid;
 
-    void clear(); // Clear bitmap to translucent black, char_grid to char#0.
     void update_window_from_content(const Color& border_color, const Color& background_color);
 };
 } // namespace basebit

@@ -5,6 +5,9 @@
 namespace basebit
 {
 struct BASEBIT_EXPORT Resolution {
+    static const Resolution commodore_64;
+    static const Resolution zx_spectrum;
+
     int width = 0, height = 0;
     int border_width = 0, border_height = 0;
 

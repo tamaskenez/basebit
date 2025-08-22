@@ -6,13 +6,6 @@
 
 namespace basebit
 {
-void ContentWindow::clear()
-{
-    bitmap_layer.clear();
-    if (char_grid) {
-        char_grid->clear();
-    }
-}
 
 void ContentWindow::update_window_from_content(UNUSED const Color& border_color, const Color& background_color)
 {

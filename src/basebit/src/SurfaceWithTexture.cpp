@@ -43,6 +43,11 @@ void SurfaceWithTexture::clear()
     TRY_SDL_FN(SDL_ClearSurface, surface.get(), 0.0, 0.0, 0.0, 0.0);
 }
 
+void SurfaceWithTexture::invalidate_all()
+{
+    dirty_area = SDL_Rect{0, 0, width, height};
+}
+
 void SurfaceWithTexture::update_texture(Renderer& renderer)
 {
     SDL_Texture* sdl_texture = renderer.get_texture_or_nullptr(texture_handle);

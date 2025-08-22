@@ -174,20 +174,53 @@ void BaseBitSystem::interactive_update()
     }
 }
 
-void BaseBitSystem::background_color(const Color& c)
-{
-    background_color_ = c;
-}
-
 void BaseBitSystem::border_color(const Color& c)
 {
     border_color_ = c;
+    if (content_window) {
+        interactive_update();
+    }
+}
+
+void BaseBitSystem::border_color(int palette_ix)
+{
+    if (palette_ix < 0 || cmp_less_equal(palette_.size(), palette_ix)) {
+        throw Error(std::format("Invalid palette index: {} (allowed range: 0 - {})", palette_ix, palette_.size()));
+    }
+    border_color(palette_[iicast<size_t>(palette_ix)]);
+}
+
+void BaseBitSystem::background_color(const Color& c)
+{
+    background_color_ = c;
+    if (content_window) {
+        interactive_update();
+    }
+}
+
+void BaseBitSystem::background_color(int palette_ix)
+{
+    if (palette_ix < 0 || cmp_less_equal(palette_.size(), palette_ix)) {
+        throw Error(std::format("Invalid palette index: {} (allowed range: 0 - {})", palette_ix, palette_.size()));
+    }
+    background_color(palette_[iicast<size_t>(palette_ix)]);
+}
+
+void BaseBitSystem::palette(std::vector<Color> colors)
+{
+    palette_ = MOVE(colors);
+    if (content_window) {
+        interactive_update();
+    }
 }
 
 void BaseBitSystem::clear()
 {
     if (content_window) {
-        content_window->clear();
+        content_window->bitmap_layer.clear();
+        if (content_window->char_grid) {
+            content_window->char_grid->clear();
+        }
         interactive_update();
     }
 }

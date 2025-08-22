@@ -17,9 +17,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
     bb::init();
     bb::set_interactive(true);
-    bb::create_window("Everything is fine.", 0.6f, basebit::Resolution(320, 200, 32, 36));
-    bb::border_color(bb::Color(113, 109, 235));
-    bb::background_color(bb::Color(46, 44, 155, 255));
+    bb::create_window("Everything is fine.", 0.7f, bb::Resolution::commodore_64);
+    bb::palette(bb::Palette::commodore_64);
+    bb::border_color(14);
+    bb::background_color(6);
     bb::clear();
     // basebit::exec();
 

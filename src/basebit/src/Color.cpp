@@ -101,7 +101,7 @@ Color::Color(string_view rgb_hex)
     if (!rgb_hex.empty() && rgb_hex[0] == '#') {
         rgb_hex.remove_prefix(1);
     }
-    if (rgb_hex.size() != 6 || rgb_hex.size() != 8) {
+    if (rgb_hex.size() != 6 && rgb_hex.size() != 8) {
         throw Error("Hex color code must be 6 or 8 hex digits, optionally prefixed by '#'");
     }
     UNUSED size_t ix = 0;
@@ -109,7 +109,6 @@ Color::Color(string_view rgb_hex)
     for (; !rgb_hex.empty(); ++ix) {
         auto d0 = rgb_hex[0];
         auto d1 = rgb_hex[1];
-        rgb_hex.remove_prefix(2);
         if (!isxdigit(d0) || !isxdigit(d1)) {
             throw Error("Hex color code must contain hex digits: 0-9, a-f, A-F");
         }
@@ -121,6 +120,7 @@ Color::Color(string_view rgb_hex)
               std::error_condition(fcr.ec).message()
             ));
         }
+        rgb_hex.remove_prefix(2);
     }
     if (ix < 4) {
         src[3] = 255;
