@@ -3,8 +3,9 @@
 #include "basebit/Error.h"
 
 #include <meadow/cppext.h>
-
 #include <meadow/dynamic_bitset.h>
+
+#include <SDL3/SDL_Surface.h>
 
 #include <fstream>
 
@@ -91,9 +92,9 @@ Charset Charset::from_file(const fs::path& path, const CharsetFileFormat& file_f
 }
 
 Charset::Charset(int w, int h)
-    : width(w)
-    , height(h)
-    , bits(make_unique<detail::CharsetDynamicBitset>())
+    : bits(make_unique<detail::CharsetDynamicBitset>())
+    , width_(w)
+    , height_(h)
 {
 }
 
@@ -112,23 +113,24 @@ Charset::Charset(vector<pair<char, vector<const char*>>> cs)
 }
 
 Charset::Charset(const std::vector<std::pair<int, std::vector<const char*>>>& cs)
+    : bits(make_unique<detail::CharsetDynamicBitset>())
 {
-    optional<pair<int, int>> wh;
     for (size_t i : vi::iota(0u, cs.size())) {
         auto char_code = cs[i].first;
         auto& csi = cs[i].second;
-        if (wh) {
-            if (cmp_not_equal(csi.size(), wh->second)) {
+        if (width_ > 0) {
+            if (cmp_not_equal(csi.size(), height_)) {
                 throw Error(
-                  format("Char #{} has {} rows which is different from char #0 which has {}", i, csi.size(), wh->second)
+                  format("Char #{} has {} rows which is different from char #0 which has {}", i, csi.size(), height_)
                 );
             }
         } else {
-            wh = pair(iicast<int>(csi.size()), iicast<int>(strlen(csi[0])));
-            if (wh->first == 0) {
+            width_ = iicast<int>(csi.size());
+            height_ = iicast<int>(strlen(csi[0]));
+            if (width_ == 0) {
                 throw Error(format("Char #{}, the first row is empty", i));
             }
-            if (wh->second == 0) {
+            if (height_ == 0) {
                 throw Error(format("Char #{} has no rows", i));
             }
         }
@@ -136,9 +138,9 @@ Charset::Charset(const std::vector<std::pair<int, std::vector<const char*>>>& cs
         for (size_t r : vi::iota(0u, csi.size())) {
             auto& csi_r = csi[r];
             size_t wr = strlen(csi_r);
-            if (cmp_not_equal(wr, wh->first)) {
+            if (cmp_not_equal(wr, width_)) {
                 throw Error(
-                  format("Character #{}, lenght of row #{} is {} while previous rows are {} long", i, r, wr, wh->first)
+                  format("Character #{}, lenght of row #{} is {} while previous rows are {} long", i, r, wr, width_)
                 );
             }
             for (size_t c : vi::iota(0u, wr)) {
@@ -180,22 +182,69 @@ string Charset::write_as_cpp_source_code(string_view indentation) const
           std::in_range<unsigned char>(k) && isprint(k) ? format("'{}'", iicast<unsigned char>(k))
                                                         : format("{:#02x}", k)
         );
-        for (int row_ix : vi::iota(0, height)) {
+        for (int row_ix : vi::iota(0, height_)) {
             string row_string;
             for (int col_ix : vi::iota(0, 8)) {
-                row_string += bits->test(v + sucast(row_ix * width + col_ix)) ? 'X' : '.';
+                row_string += bits->test(v + sucast(row_ix * width_ + col_ix)) ? 'X' : '.';
             }
             s += format(
               "{}  {}\"{}\"{} //\n",
               indentation,
               row_ix == 0 ? '{' : ' ',
               row_string,
-              row_ix + 1 == height ? "}}," : ",  "
+              row_ix + 1 == height_ ? "}}," : ",  "
             );
         }
     }
     s += "};\n";
     return s;
 }
+
+namespace detail
+{
+std::unordered_map<int, int> write_charset_into_sdl_surface(const Charset& cs, SDL_Surface* surface)
+{
+    if (surface->w != cs.width()) {
+        throw Error(format("SDL_Surface::w ({}) and Charset::width() ({}) must match", surface->w, cs.width()));
+    }
+    const int required_height = cs.height() * iicast<int>(cs.size());
+    if (surface->h < required_height) {
+        throw Error(format(
+          "SDL_Surface::h ({}) must not be less than Charset::height() * Charset::size() ({} * {} = {})",
+          surface->h,
+          cs.height(),
+          cs.size(),
+          required_height
+        ));
+    }
+    int surface_next_y0 = 0;
+    std::unordered_map<int, int> code_to_surface_y0;
+    for (auto& [code, bits_ix0] : cs.chars) {
+        const int surface_y0 = surface_next_y0;
+        surface_next_y0 += cs.height();
+        code_to_surface_y0.emplace(code, surface_y0);
+        uint8_t* const pixels_byte0 = reinterpret_cast<uint8_t*>(surface->pixels) + surface_y0 * surface->pitch;
+        for (int char_y : vi::iota(0, cs.height())) {
+            const auto bits_row_ix = bits_ix0 + iicast<size_t>(char_y * cs.width());
+            uint8_t* const pixels_row_byte = pixels_byte0 + char_y * surface->pitch;
+            const int end_row_byte_ix = (cs.width() + 7) / 8;
+            for (int row_byte_ix = 0; row_byte_ix < end_row_byte_ix; ++row_byte_ix) {
+                uint8_t byte = 0;
+                const int byte_begin_x = row_byte_ix * 8;
+                const int byte_end_x = std::min(byte_begin_x + 8, cs.width());
+                for (int char_x = byte_begin_x; char_x < byte_end_x; ++char_x) {
+                    const int x_within_byte = char_x % 8;
+                    const int bit_ix = 7 - x_within_byte;
+                    if (cs.bits->test(bits_row_ix + iicast<size_t>(char_x))) {
+                        byte |= (1 << bit_ix);
+                    }
+                }
+                pixels_row_byte[row_byte_ix] = byte;
+            }
+        }
+    }
+    return code_to_surface_y0;
+}
+} // namespace detail
 
 } // namespace basebit

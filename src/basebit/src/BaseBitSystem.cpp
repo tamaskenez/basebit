@@ -7,6 +7,9 @@
 
 #include <absl/cleanup/cleanup.h>
 
+#include <atomic>
+#include <stdexcept>
+
 namespace basebit
 {
 
@@ -15,6 +18,7 @@ namespace
 // https://wiki.libsdl.org/SDL3/SDL_CreateRendererWithProperties:
 //     "direct3d11, direct3d12, and metal renderers support SDL_COLORSPACE_SRGB_LINEAR"
 constexpr bool k_create_window_renderer_with_srgb_linear = false;
+std::atomic<int> next_charset_handle = k_null_charset_handle + 1;
 } // namespace
 
 BaseBitSystem::BaseBitSystem() {}
@@ -132,12 +136,20 @@ void BaseBitSystem::create_window(const char* title, float height_to_screen_rati
         TRY_SDL_FN(SDL_SetRenderScale, renderer->get(), cwd_result.pixel_size, cwd_result.pixel_size);
 
         auto bitmap_layer = SurfaceWithTexture(*renderer, resolutionArg.full_width(), resolutionArg.full_height());
+        auto char_grid = CharacterGridWithTexture(
+          *renderer,
+          resolutionArg.char_grid_width + 2,
+          resolutionArg.char_grid_height + 2,
+          resolutionArg.char_width,
+          resolutionArg.char_height
+        );
         content_window = ContentWindow{
           .resolution = resolutionArg,
           .pixel_size = cwd_result.pixel_size,
           .window = MOVE(window),
           .renderer = MOVE(renderer.value()),
-          .bitmap_layer = MOVE(bitmap_layer)
+          .bitmap_layer = MOVE(bitmap_layer),
+          .char_grid = MOVE(char_grid)
         };
         break;
     }
@@ -159,7 +171,7 @@ void BaseBitSystem::interactive_update()
             SDL_Event event;
             while (SDL_PollEvent(&event)) {}
             if (content_window) {
-                content_window->update_window_from_content(border_color_, background_color_);
+                content_window->update_window_from_content(border_color_, background_color_, charsets);
             }
         }
 #else
@@ -231,9 +243,7 @@ void BaseBitSystem::clear()
 {
     if (content_window) {
         content_window->bitmap_layer.clear();
-        if (content_window->char_grid) {
-            content_window->char_grid->clear();
-        }
+        content_window->char_grid.clear();
         interactive_update();
     }
 }
@@ -265,8 +275,51 @@ void BaseBitSystem::exec()
 #endif
 }
 
-int BaseBitSystem::add_charset(const Charset& cs) {}
+int BaseBitSystem::add_charset(const Charset& cs)
+{
+    if (!content_window) {
+        throw Error("No window created");
+    }
 
-void BaseBitSystem::charset(int charset_ix) {}
+    auto& res = content_window->resolution;
+    if (res.char_width != cs.width() || res.char_height != cs.height()) {
+        throw Error(format(
+          "Charset has {} x {} characters but char grid expects {} x {}",
+          cs.width(),
+          cs.height(),
+          res.char_width,
+          res.char_height
+        ));
+    }
+
+    int charset_handle = next_charset_handle++;
+    charsets.emplace(charset_handle, CharsetInSurface(cs));
+    return charset_handle;
+}
+
+void BaseBitSystem::charset(int charset_handle)
+{
+    if (charset_handle != k_null_charset_handle && !charsets.contains(charset_handle)) {
+        throw Error(format("Invalid charset handle: {}", charset_handle));
+    }
+    current_charset_handle = charset_handle;
+}
+
+void BaseBitSystem::print(int x, int y, std::string_view chars)
+{
+    for (size_t i = 0; i < chars.size(); ++i) {
+        print(x + iicast<int>(i), y, iicast<int>(bitcast<unsigned char>(chars[i])));
+    }
+    interactive_update();
+}
+
+void BaseBitSystem::print(int x, int y, int code)
+{
+    if (!content_window) {
+        throw Error("No window created");
+    }
+    // +1 to account for the 1-char border.
+    content_window->char_grid.print(x + 1, y + 1, current_charset_handle, code);
+}
 
 } // namespace basebit

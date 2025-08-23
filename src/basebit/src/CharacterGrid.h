@@ -7,9 +7,18 @@
 namespace basebit
 {
 
+constexpr int k_null_charset_handle = 0;
+
+class Renderer;
+struct CharsetInSurface;
+
 struct CharacterGrid {
     int width = 0, height = 0;
-    vector<int> grid;
+    struct Cell {
+        int charset_handle = k_null_charset_handle;
+        int char_code;
+    };
+    vector<Cell> grid;
 
     CharacterGrid(int w, int h)
         : width(w)
@@ -19,18 +28,17 @@ struct CharacterGrid {
     }
 };
 
+// The character grid covers the area inside the border and a 1-character thick additional margin around it.
 struct CharacterGridWithTexture {
     CharacterGrid grid;
-    int texture;
-    sdl_unique_ptr<SDL_Surface> charSet;
+    int char_width, char_height;
+    int texture_handle;
+    SDL_Rect dirty_area;
 
-    CharacterGridWithTexture(int w, int h)
-        : grid(w, h)
-    {
-        // TODO
-        assert(false);
-    }
+    CharacterGridWithTexture(Renderer& renderer, int w, int h, int char_w, int char_h);
 
-    void clear(); // Clear to char#0.
+    void clear(); // Clear to {k_null_charset_handle, 0}
+    void print(int x, int y, int charset_code, int char_code);
+    void render(Renderer& renderer, const unordered_map<int, CharsetInSurface>& charsets);
 };
 } // namespace basebit

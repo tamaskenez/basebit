@@ -5,11 +5,10 @@
 #include <filesystem>
 #include <map>
 #include <string_view>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
-namespace basebit
-{
 /*
 std::vector<std::vector<const char*>> charset_style_1 = {
   {"XXX.", //
@@ -57,6 +56,10 @@ std::vector<std::pair<int, std::vector<const char*>>> charset_style_3 = {
     - X.X.
 */
 
+struct SDL_Surface;
+
+namespace basebit
+{
 struct BASEBIT_EXPORT CharsetFileFormat {
     enum class Type {
         raw_bytes_of_8_pixel_wide_chars, // Specify height.
@@ -65,17 +68,21 @@ struct BASEBIT_EXPORT CharsetFileFormat {
     int height = 0; // 0 is "auto".
 };
 
+class Charset;
 namespace detail
 {
 class CharsetDynamicBitset;
-}
+std::unordered_map<int, int> write_charset_into_sdl_surface(const Charset& cs, SDL_Surface* surface);
+} // namespace detail
 
 // Monochrome, monospaced character set.
 class BASEBIT_EXPORT Charset
 {
-    int width = 0, height = 0;
-    std::map<int, size_t> chars;
     std::unique_ptr<detail::CharsetDynamicBitset> bits;
+    int width_ = 0, height_ = 0;
+    std::map<int, size_t> chars;
+
+    friend std::unordered_map<int, int> detail::write_charset_into_sdl_surface(const Charset& cs, SDL_Surface* surface);
 
 public:
     static const Charset commodore_64_upper;
@@ -92,6 +99,19 @@ public:
     Charset(Charset&&);
 
     ~Charset();
+
+    int width() const
+    {
+        return width_;
+    }
+    int height() const
+    {
+        return height_;
+    }
+    size_t size() const
+    {
+        return chars.size();
+    }
 };
 
 } // namespace basebit

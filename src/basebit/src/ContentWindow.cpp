@@ -7,7 +7,9 @@
 namespace basebit
 {
 
-void ContentWindow::update_window_from_content(UNUSED const Color& border_color, const Color& background_color)
+void ContentWindow::update_window_from_content(
+  const Color& border_color, const Color& background_color, const unordered_map<int, CharsetInSurface>& charsets
+)
 {
     // Layer#1: Clear to background color.
     auto c = background_color.get_srgb_f32();
@@ -15,12 +17,13 @@ void ContentWindow::update_window_from_content(UNUSED const Color& border_color,
       SDL_SetRenderDrawColorFloat, renderer.get(), c[0], c[1], c[2], c[3]
     ); // TODO: check if setting renderer colorspace to srgb_linear makes this different.
     TRY_SDL_FN(SDL_RenderClear, renderer.get());
+
     // Layer#2: Draw bitmap.
     bitmap_layer.render(renderer);
-#if 0
+
     // Layer#3: Draw character grid.
-#endif
-#if 1
+    char_grid.render(renderer, charsets);
+
     // Layer#4: Draw border.
     c = border_color.get_srgb_f32();
     TRY_SDL_FN(
@@ -38,7 +41,7 @@ void ContentWindow::update_window_from_content(UNUSED const Color& border_color,
       SDL_FRect{right_border_left, top_border_bottom, left_border_right, bottom_border_top - top_border_bottom};
     rects[3] = SDL_FRect{0, bottom_border_top, full_width, top_border_bottom};
     TRY_SDL_FN(SDL_RenderFillRects, renderer.get(), rects.data(), rects.size());
-#endif
+
     TRY_SDL_FN(SDL_RenderPresent, renderer.get());
 }
 } // namespace basebit

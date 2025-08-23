@@ -35,7 +35,8 @@ BASEBIT_EXPORT void exec();
 BASEBIT_EXPORT void palette(std::vector<Color> colors);
 BASEBIT_EXPORT void plot(int x, int y);
 BASEBIT_EXPORT int add_charset(const Charset& cs);
-BASEBIT_EXPORT void charset(int charset_ix);
+BASEBIT_EXPORT void charset(int charset_handle); // Use 0 for printing blank characters.
+BASEBIT_EXPORT void print(int x, int y, std::string_view text);
 } // namespace basebit
 
 /*

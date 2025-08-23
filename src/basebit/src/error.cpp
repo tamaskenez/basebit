@@ -1,7 +1,8 @@
 #include "error.h"
 
-#include <SDL3/SDL_error.h>
+#include "basebit/Error.h"
 
+#include <SDL3/SDL_error.h>
 #include <SDL3/SDL_platform_defines.h>
 
 #include <cassert>

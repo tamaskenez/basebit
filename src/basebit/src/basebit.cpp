@@ -133,4 +133,9 @@ void charset(int charset_ix)
     g_basebit->charset(charset_ix);
 }
 
+void print(int x, int y, std::string_view chars)
+{
+    g_basebit->print(x, y, chars);
+}
+
 } // namespace basebit

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CharacterGrid.h"
+#include "CharsetInSurface.h"
 #include "Renderer.h"
 #include "SurfaceWithTexture.h"
 
@@ -17,8 +18,12 @@ struct ContentWindow {
     sdl_unique_ptr<SDL_Window> window; // The single, global window.
     Renderer renderer;                 // Renderer for the window.
     SurfaceWithTexture bitmap_layer;
-    optional<CharacterGridWithTexture> char_grid;
+    CharacterGridWithTexture char_grid;
 
-    void update_window_from_content(const Color& border_color, const Color& background_color);
+    void update_window_from_content(
+      const Color& border_color,
+      const Color& background_color,
+      const std::unordered_map<int, CharsetInSurface>& charsets
+    );
 };
 } // namespace basebit

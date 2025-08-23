@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CharsetInSurface.h"
 #include "ContentWindow.h"
 
 #include "basebit/basebit.h"
@@ -15,8 +16,9 @@ class BaseBitSystem
 {
     optional<ContentWindow> content_window;
     Color border_color_, background_color_, color_;
-    std::vector<Color> palette_;
-    std::unordered_map<int, CharsetInSurface> charsets;
+    vector<Color> palette_;
+    unordered_map<int, CharsetInSurface> charsets;
+    int current_charset_handle = k_null_charset_handle;
 
 public:
     bool interactive = false;
@@ -40,7 +42,9 @@ public:
     void plot(int x, int y);
 
     int add_charset(const Charset& cs);
-    void charset(int charset_ix);
+    void charset(int charset_handle);
+    void print(int x, int y, std::string_view chars);
+    void print(int x, int y, int code);
 
     void exec();
 
