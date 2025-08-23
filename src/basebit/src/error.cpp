@@ -1,7 +1,5 @@
 #include "error.h"
 
-#include "basebit/basebit.h"
-
 #include <SDL3/SDL_error.h>
 
 #include <SDL3/SDL_platform_defines.h>

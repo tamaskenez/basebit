@@ -265,4 +265,8 @@ void BaseBitSystem::exec()
 #endif
 }
 
+int BaseBitSystem::add_charset(const Charset& cs) {}
+
+void BaseBitSystem::charset(int charset_ix) {}
+
 } // namespace basebit

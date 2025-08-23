@@ -15,6 +15,11 @@ namespace bb = basebit;
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
+    auto charset = basebit::Charset::from_file(
+      "/Users/dk8TamKe/git/basebit/data/c64_us_upper.bin",
+      bb::CharsetFileFormat{.type = bb::CharsetFileFormat::Type::raw_bytes_of_8_pixel_wide_chars, .height = 8}
+    );
+    println("{}", charset.write_as_cpp_source_code());
     bb::init();
     bb::set_interactive(true);
     bb::create_window("Everything is fine.", 0.7f, bb::Resolution::commodore_64);
@@ -25,7 +30,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     for (int x : vi::iota(0, 320)) {
         bb::plot(x, x % 20);
     }
-    // basebit::exec();
+    bb::charset(bb::Charset::commodore_64_upper);
+    //  basebit::exec();
 
     int num_renderers = SDL_GetNumRenderDrivers();
     for (int i = 0; i < num_renderers; ++i) {

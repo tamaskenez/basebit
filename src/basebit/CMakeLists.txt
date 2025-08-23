@@ -11,6 +11,7 @@ target_link_libraries(basebit
 		meadow
 		sdl_util
 		absl::cleanup
+		reflectcpp::reflectcpp
 )
 target_include_directories(basebit
 	PUBLIC

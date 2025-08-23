@@ -27,6 +27,7 @@ endif()
 find_package(absl REQUIRED CONFIG)
 find_package(Eigen3 REQUIRED CONFIG)
 find_package(SDL3 REQUIRED CONFIG)
+find_package(reflectcpp REQUIRED CONFIG)
 
 find_package(Python COMPONENTS Interpreter Development REQUIRED)
 add_subdirectory(submodules/pybind11)

@@ -16,6 +16,7 @@ class BaseBitSystem
     optional<ContentWindow> content_window;
     Color border_color_, background_color_, color_;
     std::vector<Color> palette_;
+    std::unordered_map<int, CharsetInSurface> charsets;
 
 public:
     bool interactive = false;
@@ -37,6 +38,9 @@ public:
 
     void palette(std::vector<Color> colors);
     void plot(int x, int y);
+
+    int add_charset(const Charset& cs);
+    void charset(int charset_ix);
 
     void exec();
 

@@ -11,12 +11,15 @@ PYBIND11_MODULE(basebit, m, py::mod_gil_not_used())
     m.def("init", &basebit::init, "Initialize the basebit system");
     m.def("set_interactive", &basebit::set_interactive, "Enable automatically updating the window after each command");
     m.def("create_window", &basebit::create_window, "Create the window and set a custom resolution and border size");
-    m.def("background_color", py::overload_cast<const basebit::Color&>(&basebit::background_color));
     m.def("border_color", py::overload_cast<const basebit::Color&>(&basebit::border_color));
-    m.def("background_color", py::overload_cast<int>(&basebit::background_color));
     m.def("border_color", py::overload_cast<int>(&basebit::border_color));
+    m.def("background_color", py::overload_cast<const basebit::Color&>(&basebit::background_color));
+    m.def("background_color", py::overload_cast<int>(&basebit::background_color));
+    m.def("color", py::overload_cast<const basebit::Color&>(&basebit::color));
+    m.def("color", py::overload_cast<int>(&basebit::color));
     m.def("clear", &basebit::clear);
     m.def("palette", &basebit::palette);
+    m.def("plot", &basebit::plot);
     m.def("exec", &basebit::exec);
     py::class_<basebit::Resolution>(m, "Resolution")
       .def(py::init<int, int, int, int>())

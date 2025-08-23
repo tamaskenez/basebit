@@ -2,6 +2,7 @@
 
 #include "basebit/export.h"
 
+#include "basebit/Charset.h"
 #include "basebit/Color.h"
 #include "basebit/Error.h"
 #include "basebit/Resolution.h"
@@ -33,6 +34,8 @@ BASEBIT_EXPORT void clear();
 BASEBIT_EXPORT void exec();
 BASEBIT_EXPORT void palette(std::vector<Color> colors);
 BASEBIT_EXPORT void plot(int x, int y);
+BASEBIT_EXPORT int add_charset(const Charset& cs);
+BASEBIT_EXPORT void charset(int charset_ix);
 } // namespace basebit
 
 /*

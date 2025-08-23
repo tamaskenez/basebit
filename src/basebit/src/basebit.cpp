@@ -124,4 +124,13 @@ void plot(int x, int y)
     g_basebit->plot(x, y);
 }
 
+int add_charset(const Charset& cs)
+{
+    return g_basebit->add_charset(cs);
+}
+void charset(int charset_ix)
+{
+    g_basebit->charset(charset_ix);
+}
+
 } // namespace basebit
