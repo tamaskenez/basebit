@@ -2,6 +2,8 @@
 
 #include "error.h"
 
+#include "sdl_util/event.h"
+
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_properties.h>
 
@@ -26,7 +28,7 @@ BaseBitSystem::BaseBitSystem() {}
 void BaseBitSystem::set_interactive(bool enable)
 {
     if (content_window) {
-        TRY_SDL_FN(SDL_SetWindowAlwaysOnTop, content_window->window.get(), interactive);
+        TRY_SDL_FN(SDL_SetWindowAlwaysOnTop, content_window->window.get(), enable);
     }
 
     bool enabled_now = !interactive && enable;
@@ -169,26 +171,38 @@ BaseBitSystem::~BaseBitSystem()
     SDL_Quit();
 }
 
+void BaseBitSystem::interactive_update_core()
+{
+#if 1
+    println("1");
+    for (int i = 0; i < 1; ++i) {
+        println("i: {}", i);
+        SDL_Event event;
+        println("2");
+        while (SDL_PollEvent(&event)) {
+            println("SDL_PollEvent -> event : {} ({})", sdl::event_type_to_name(SDL_EventType(event.type)), event.type);
+        }
+        if (content_window) {
+            println("Calling update_window_from_content");
+            content_window->update_window_from_content(border_color_, background_color_, charsets);
+            println("Done calling update_window_from_content");
+        }
+    }
+#else
+    SDL_PumpEvents();
+    if (window && renderer) {
+        update_screen();
+        if (!SDL_RenderPresent(renderer.get())) {
+            throw_sdl_error("SDL_RenderPresent");
+        }
+    }
+#endif
+}
+
 void BaseBitSystem::interactive_update()
 {
     if (interactive) {
-#if 1
-        for (int i = 0; i < 3; ++i) {
-            SDL_Event event;
-            while (SDL_PollEvent(&event)) {}
-            if (content_window) {
-                content_window->update_window_from_content(border_color_, background_color_, charsets);
-            }
-        }
-#else
-        SDL_PumpEvents();
-        if (window && renderer) {
-            update_screen();
-            if (!SDL_RenderPresent(renderer.get())) {
-                throw_sdl_error("SDL_RenderPresent");
-            }
-        }
-#endif
+        interactive_update_core();
     }
 }
 
@@ -329,6 +343,32 @@ void BaseBitSystem::print(int x, int y, int code)
     }
     // +1 to account for the 1-char border.
     content_window->char_grid.print(x + 1, y + 1, current_charset_handle, code);
+}
+
+void BaseBitSystem::update()
+{
+    interactive_update_core();
+}
+void BaseBitSystem::stat()
+{
+    if (!content_window) {
+        println("No content window.");
+        return;
+    }
+    auto& r = content_window->resolution;
+    println(
+      "Resolution {} x {}, border {} and {}, char_grid: {} x {}",
+      r.width,
+      r.height,
+      r.border_width,
+      r.border_height,
+      r.char_grid_width,
+      r.char_grid_height
+    );
+    println("Pixel size: {}", content_window->pixel_size);
+    println("Window: {}", static_cast<void*>(content_window->window.get()));
+    auto rn = SDL_GetRendererName(content_window->renderer.get());
+    println("Renderer: {}", rn ? rn : "<nullptr>");
 }
 
 } // namespace basebit

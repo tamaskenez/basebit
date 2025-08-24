@@ -7,7 +7,7 @@
 
 namespace basebit
 {
-class BASEBIT_EXPORT Error : std::runtime_error
+class BASEBIT_EXPORT Error : public std::runtime_error
 {
 public:
     explicit Error(const std::string& msg)

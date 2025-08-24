@@ -138,4 +138,17 @@ void print(int x, int y, std::string_view chars)
     g_basebit->print(x, y, chars);
 }
 
+void update()
+{
+    g_basebit->update();
+}
+void stat()
+{
+    if (g_basebit) {
+        g_basebit->stat();
+    } else {
+        println("BaseBit is not initialized.");
+    }
+}
+
 } // namespace basebit

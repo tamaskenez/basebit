@@ -49,7 +49,11 @@ public:
 
     void exec();
 
+    void update();
+    void stat();
+
 private:
     void interactive_update();
+    void interactive_update_core();
 };
 } // namespace basebit

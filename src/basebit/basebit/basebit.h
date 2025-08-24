@@ -37,6 +37,8 @@ BASEBIT_EXPORT void plot(int x, int y);
 BASEBIT_EXPORT int add_charset(const Charset& cs);
 BASEBIT_EXPORT void charset(int charset_handle); // Use 0 for printing blank characters.
 BASEBIT_EXPORT void print(int x, int y, std::string_view text);
+BASEBIT_EXPORT void update();
+BASEBIT_EXPORT void stat();
 } // namespace basebit
 
 /*

@@ -22,7 +22,7 @@ PYBIND11_MODULE(basebit, m, py::mod_gil_not_used())
     m.def("plot", &basebit::plot);
     m.def("exec", &basebit::exec);
     py::class_<basebit::Resolution>(m, "Resolution")
-      .def(py::init<int, int, int, int>())
+      .def(py::init<int, int, int, int, int, int>())
       .def("full_width", &basebit::Resolution::full_width)
       .def("full_height", &basebit::Resolution::full_height)
       .def_readwrite("width", &basebit::Resolution::width)
@@ -48,5 +48,13 @@ PYBIND11_MODULE(basebit, m, py::mod_gil_not_used())
         py::init<std::string_view>(),
         "Initialize with an sRGB color code of 6 or 8 hex digits, with an optional '#' prefix"
       );
-    py::register_local_exception<basebit::Error>(module, "Error", PyExc_RuntimeError);
+    py::register_local_exception<basebit::Error>(m, "Error", PyExc_RuntimeError);
+    py::class_<basebit::Charset>(m, "Charset")
+      .def_readonly_static("commodore_64_upper", &basebit::Charset::commodore_64_upper)
+      .def_readonly_static("commodore_64_lower", &basebit::Charset::commodore_64_lower);
+    m.def("add_charset", &basebit::add_charset);
+    m.def("charset", &basebit::charset);
+    m.def("print", &basebit::print);
+    m.def("update", &basebit::update);
+    m.def("stat", &basebit::stat);
 }
