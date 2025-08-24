@@ -39,6 +39,6 @@ struct CharacterGridWithTexture {
 
     void clear(); // Clear to {k_null_charset_handle, 0}
     void print(int x, int y, int charset_code, int char_code);
-    void render(Renderer& renderer, const unordered_map<int, CharsetInSurface>& charsets);
+    void render(Renderer& renderer, const unordered_map<int, CharsetInSurface>& charsets, const SDL_FRect& dst_rect);
 };
 } // namespace basebit

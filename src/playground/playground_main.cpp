@@ -27,9 +27,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
             bb::plot(x, x % 20);
         }
     }
-    const int c64_upper_handle = bb::add_charset(bb::Charset::commodore_64_upper);
-    bb::charset(c64_upper_handle);
-    bb::print(3, 5, "HELLO");
+    UNUSED const int c64_upper_handle = bb::add_charset(bb::Charset::commodore_64_upper);
+    const int c64_lower_handle = bb::add_charset(bb::Charset::commodore_64_lower);
+    bb::charset(c64_lower_handle);
+    bb::print(3, 5, "COMMODORE 64 YEAH!");
     //  basebit::exec();
 
     int num_renderers = SDL_GetNumRenderDrivers();

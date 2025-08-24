@@ -14,6 +14,7 @@ CharacterGridWithTexture::CharacterGridWithTexture(Renderer& renderer, int w, in
     , texture_handle(create_texture(renderer, grid.width * char_width, grid.height * char_height).first)
     , dirty_area(SDL_Rect{0, 0, w, h})
 {
+    renderer.get_texture_or_nullptr(0);
 }
 
 void CharacterGridWithTexture::clear()
@@ -32,7 +33,9 @@ void CharacterGridWithTexture::print(int x, int y, int charset_handle, int char_
     TRY_SDL_FN(SDL_GetRectUnion, &dirty_area, &rect_of_char, &dirty_area);
 }
 
-void CharacterGridWithTexture::render(Renderer& renderer, const unordered_map<int, CharsetInSurface>& charsets)
+void CharacterGridWithTexture::render(
+  Renderer& renderer, const unordered_map<int, CharsetInSurface>& charsets, const SDL_FRect& dst_rect
+)
 {
     SDL_Texture* sdl_texture = renderer.get_texture_or_nullptr(texture_handle);
     if (!sdl_texture) {
@@ -68,7 +71,9 @@ void CharacterGridWithTexture::render(Renderer& renderer, const unordered_map<in
                     continue;
                 }
                 SDL_Rect src_char_rect{0, it->second, char_width, char_height};
-                SDL_Rect dst_char_rect{x * char_width, y * char_height, char_width, char_height};
+                SDL_Rect dst_char_rect{
+                  x * char_width - dirty_area_pixels.x, y * char_height - dirty_area_pixels.y, char_width, char_height
+                };
                 TRY_SDL_FN(
                   SDL_BlitSurfaceUnchecked, charset.surface.get(), &src_char_rect, surface_for_texture, &dst_char_rect
                 );
@@ -76,7 +81,7 @@ void CharacterGridWithTexture::render(Renderer& renderer, const unordered_map<in
         }
     }
 
-    TRY_SDL_FN(SDL_RenderTexture, renderer.get(), sdl_texture, nullptr, nullptr);
+    TRY_SDL_FN(SDL_RenderTexture, renderer.get(), sdl_texture, nullptr, &dst_rect);
 
     dirty_area = SDL_Rect{0, 0, 0, 0};
 }

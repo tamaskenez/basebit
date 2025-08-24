@@ -17,6 +17,7 @@ class BaseBitSystem
     optional<ContentWindow> content_window;
     Color border_color_, background_color_, color_;
     vector<Color> palette_;
+    sdl_unique_ptr<SDL_Palette> char_palette;
     unordered_map<int, CharsetInSurface> charsets;
     int current_charset_handle = k_null_charset_handle;
 

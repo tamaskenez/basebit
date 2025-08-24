@@ -12,6 +12,6 @@ struct CharsetInSurface {
     sdl_unique_ptr<SDL_Surface> surface;
     unordered_map<int, int> code_to_surface_y;
 
-    explicit CharsetInSurface(const Charset& cs);
+    CharsetInSurface(const Charset& cs, SDL_Palette* palette);
 };
 } // namespace basebit

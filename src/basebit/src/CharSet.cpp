@@ -217,31 +217,55 @@ std::unordered_map<int, int> write_charset_into_sdl_surface(const Charset& cs, S
           required_height
         ));
     }
-    int surface_next_y0 = 0;
     std::unordered_map<int, int> code_to_surface_y0;
-    for (auto& [code, bits_ix0] : cs.chars) {
-        const int surface_y0 = surface_next_y0;
-        surface_next_y0 += cs.height();
-        code_to_surface_y0.emplace(code, surface_y0);
-        uint8_t* const pixels_byte0 = reinterpret_cast<uint8_t*>(surface->pixels) + surface_y0 * surface->pitch;
-        for (int char_y : vi::iota(0, cs.height())) {
-            const auto bits_row_ix = bits_ix0 + iicast<size_t>(char_y * cs.width());
-            uint8_t* const pixels_row_byte = pixels_byte0 + char_y * surface->pitch;
-            const int end_row_byte_ix = (cs.width() + 7) / 8;
-            for (int row_byte_ix = 0; row_byte_ix < end_row_byte_ix; ++row_byte_ix) {
-                uint8_t byte = 0;
-                const int byte_begin_x = row_byte_ix * 8;
-                const int byte_end_x = std::min(byte_begin_x + 8, cs.width());
-                for (int char_x = byte_begin_x; char_x < byte_end_x; ++char_x) {
-                    const int x_within_byte = char_x % 8;
-                    const int bit_ix = 7 - x_within_byte;
-                    if (cs.bits->test(bits_row_ix + iicast<size_t>(char_x))) {
-                        byte |= (1 << bit_ix);
-                    }
+    if (surface->format == SDL_PIXELFORMAT_INDEX8) {
+        int surface_next_y0 = 0;
+        for (auto& [code, bits_ix0] : cs.chars) {
+            const int surface_y0 = surface_next_y0;
+            surface_next_y0 += cs.height();
+            code_to_surface_y0.emplace(code, surface_y0);
+            uint8_t* pixels_byte = reinterpret_cast<uint8_t*>(surface->pixels) + surface_y0 * surface->pitch;
+            size_t bits_ix = bits_ix0;
+            for (UNUSED int char_y : vi::iota(0, cs.height())) {
+                for (int char_x : vi::iota(0, cs.width())) {
+                    const bool bit = cs.bits->test(iicast<size_t>(bits_ix + iicast<size_t>(char_x)));
+                    pixels_byte[char_x] = bit ? 1 : 0;
                 }
-                pixels_row_byte[row_byte_ix] = byte;
+                pixels_byte += surface->pitch;
+                bits_ix += iicast<size_t>(cs.width());
             }
         }
+    } else {
+        // INDEX1LSB or MSB should have worked but it didn't. Switched to INDEX8
+        throw std::logic_error("Charset expectes surface with SDL_PIXELFORMAT_INDEX8");
+#if 0
+        int surface_next_y0 = 0;
+        std::unordered_map<int, int> code_to_surface_y0;
+        for (auto& [code, bits_ix0] : cs.chars) {
+            const int surface_y0 = surface_next_y0;
+            surface_next_y0 += cs.height();
+            code_to_surface_y0.emplace(code, surface_y0);
+            uint8_t* const pixels_byte0 = reinterpret_cast<uint8_t*>(surface->pixels) + surface_y0 * surface->pitch;
+            for (int char_y : vi::iota(0, cs.height())) {
+                const auto bits_row_ix = bits_ix0 + iicast<size_t>(char_y * cs.width());
+                uint8_t* const pixels_row_byte = pixels_byte0 + char_y * surface->pitch;
+                const int end_row_byte_ix = (cs.width() + 7) / 8;
+                for (int row_byte_ix = 0; row_byte_ix < end_row_byte_ix; ++row_byte_ix) {
+                    uint8_t byte = 0;
+                    const int byte_begin_x = row_byte_ix * 8;
+                    const int byte_end_x = std::min(byte_begin_x + 8, cs.width());
+                    for (int char_x = byte_begin_x; char_x < byte_end_x; ++char_x) {
+                        const int x_within_byte = char_x % 8;
+                        const int bit_ix = 7 - x_within_byte;
+                        if (cs.bits->test(bits_row_ix + iicast<size_t>(char_x))) {
+                            byte |= (1 << bit_ix);
+                        }
+                    }
+                    pixels_row_byte[row_byte_ix] = byte;
+                }
+            }
+        }
+#endif
     }
     return code_to_surface_y0;
 }

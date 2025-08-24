@@ -22,7 +22,13 @@ void ContentWindow::update_window_from_content(
     bitmap_layer.render(renderer);
 
     // Layer#3: Draw character grid.
-    char_grid.render(renderer, charsets);
+    SDL_FRect dst_rect{
+      ifcast<float>(resolution.border_width - resolution.char_width),
+      ifcast<float>(resolution.border_height - resolution.char_height),
+      ifcast<float>(char_grid.grid.width * resolution.char_width),
+      ifcast<float>(char_grid.grid.height * resolution.char_height)
+    };
+    char_grid.render(renderer, charsets, dst_rect);
 
     // Layer#4: Draw border.
     c = border_color.get_srgb_f32();

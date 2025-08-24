@@ -151,6 +151,12 @@ void BaseBitSystem::create_window(const char* title, float height_to_screen_rati
           .bitmap_layer = MOVE(bitmap_layer),
           .char_grid = MOVE(char_grid)
         };
+        char_palette.reset(TRY_SDL_FN(SDL_CreatePalette, 2));
+        array<SDL_Color, 2> colors = {
+          SDL_Color{0,   0,   0,   0  },
+          SDL_Color{255, 255, 255, 255}
+        };
+        TRY_SDL_FN(SDL_SetPaletteColors, char_palette.get(), colors.data(), 0, 2);
         break;
     }
     set_interactive(interactive); // For content window always on top.
@@ -221,6 +227,9 @@ void BaseBitSystem::background_color(int palette_ix)
 void BaseBitSystem::color(const Color& c)
 {
     color_ = c;
+    auto c8 = c.get_srgb_u8();
+    SDL_Color sdl_color{c8[0], c8[1], c8[2], c8[3]};
+    TRY_SDL_FN(SDL_SetPaletteColors, char_palette.get(), &sdl_color, 1, 1);
 }
 
 void BaseBitSystem::color(int palette_ix)
@@ -293,7 +302,7 @@ int BaseBitSystem::add_charset(const Charset& cs)
     }
 
     int charset_handle = next_charset_handle++;
-    charsets.emplace(charset_handle, CharsetInSurface(cs));
+    charsets.emplace(charset_handle, CharsetInSurface(cs, char_palette.get()));
     return charset_handle;
 }
 
